@@ -8,10 +8,6 @@ def create_connection():
 
     DATABASE_URL = os.getenv("DATABASE_URL")
 
-    try:
-        conn = psycopg2.connect(DATABASE_URL)
-    except:
-        print("Cannot connect to database!", file=stderr)
-        return None
+    conn = psycopg2.connect(DATABASE_URL)
 
     return conn
