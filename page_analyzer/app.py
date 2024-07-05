@@ -61,9 +61,11 @@ def urls_check(id_):
     status_code = 404
     try:
         req = requests.get(url_data.name)
-        status_code = req.status_code
+        req.raise_for_status()
     except Exception as e:
-        print(e)
-    save_check(id_, status_code=status_code)
-    flash("Страница успешно проверена", "success")
+        print(f"Error! {e}")
+        flash("Произошла ошибка при проверке", "danger")
+    else:
+        save_check(id_, status_code=status_code)
+        flash("Страница успешно проверена", "success")
     return redirect(url_for("urls_show", id_=id_))
