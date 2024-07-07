@@ -104,8 +104,8 @@ def find_url_by_name(name):
     return False
 
 
-def save_check(id_, *, status_code=None):
+def save_check(id_, *, status_code=None, title=None, h1=None, description=None):
     with create_connection() as conn, conn.cursor() as curs:
-        curs.execute("""INSERT INTO url_checks (url_id, created_at, status_code)
-                        VALUES (%s, %s, %s)""",
-                     [id_, datetime.now(), status_code])
+        curs.execute("""INSERT INTO url_checks (url_id, created_at, status_code, title, h1, description)
+                        VALUES (%s, %s, %s, %s, %s, %s)""",
+                     [id_, datetime.now(), status_code, title, h1, description])
