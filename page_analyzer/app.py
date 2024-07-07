@@ -69,6 +69,9 @@ def urls_check(id_):
         flash("Произошла ошибка при проверке", "danger")
     else:
         parsed_data = parse_html(url_data.name)
-        save_check(id_, status_code=status_code, title=parsed_data["title"], h1=parsed_data["h1"])
+        save_check(id_,
+                   status_code=status_code,
+                   title=parsed_data["title"],
+                   h1=parsed_data["h1"])
         flash("Страница успешно проверена", "success")
     return redirect(url_for("urls_show", id_=id_))
