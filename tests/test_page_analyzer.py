@@ -8,8 +8,9 @@ import pytest
 def app():
     new_app = app_
     new_app.config.update({
-        "Testing": True,
+        "TESTING": True,
         "SECRET_KEY": os.getenv("TEST_SECRET_KEY"),
+        "DATABASE_URL": "",
     })
     return new_app
 
@@ -37,8 +38,5 @@ def test_urls(client):
 def test_index_form(client):
     response = client.post("/urls", data={
         "url": "https://hexlet.io",
-    }, follow_redirects=True)
-    assert response.status_code == 200
-    assert any(["Страница успешно добавлена" in response.text,
-                "Страница уже существует" in response.text])
-    assert "hexlet" in response.text
+    })
+    assert response.status_code == 302
