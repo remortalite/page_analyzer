@@ -2,7 +2,7 @@ from page_analyzer.db import (save_data,
                               select_checks, select_checkinfo,
                               find_url_by_id, find_url_by_name,
                               save_check)
-from page_analyzer.utils import url_validator, url_normalize
+from page_analyzer.utils import url_validate, url_normalize
 from page_analyzer.parser import parse_html
 
 from flask import Flask
@@ -40,7 +40,7 @@ def urls_show(id_):
 @app.route("/urls", methods=["POST"])
 def urls_post():
     data = request.form.to_dict()
-    errors = url_validator(data)
+    errors = url_validate(data)
     if errors:
         return render_template("index.html", data=data, errors=errors), 422
     new_url = url_normalize(data["url"])
