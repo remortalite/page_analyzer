@@ -28,7 +28,7 @@ def urls_get():
                            urls=all_urls)
 
 
-@app.route("/urls/<id_>", methods=["GET"])
+@app.route("/urls/<int:id_>", methods=["GET"])
 def urls_show(id_):
     data = find_url_by_id(id_)
     checks = select_checks(id_)
@@ -42,6 +42,7 @@ def urls_post():
     data = request.form.to_dict()
     errors = url_validate(data)
     if errors:
+        flash("Некорректный URL", "danger")
         return render_template("index.html", data=data, errors=errors), 422
     new_url = url_normalize(data["url"])
 
@@ -56,7 +57,7 @@ def urls_post():
     return redirect(url_for("urls_show", id_=new_data.id))
 
 
-@app.route("/urls/<id_>/check", methods=["POST"])
+@app.route("/urls/<int:id_>/check", methods=["POST"])
 def urls_check(id_):
     url_data = find_url_by_id(id_)
     status_code = None
@@ -69,9 +70,12 @@ def urls_check(id_):
         flash("Произошла ошибка при проверке", "danger")
     else:
         parsed_data = parse_html(url_data.name)
-        save_check(id_,
-                   status_code=status_code,
-                   title=parsed_data["title"],
-                   h1=parsed_data["h1"])
-        flash("Страница успешно проверена", "success")
+        if parsed_data:
+            save_check(id_,
+                       status_code=status_code,
+                       title=parsed_data["title"],
+                       h1=parsed_data["h1"])
+            flash("Страница успешно проверена", "success")
+        else:
+            flash("Произошла ошибка при проверке", "danger")
     return redirect(url_for("urls_show", id_=id_))
