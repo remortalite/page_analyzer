@@ -9,9 +9,10 @@ from flask import Flask
 from flask import render_template, request, flash, redirect, url_for
 import os
 import requests
+import uuid
 
 
-def create_app():
+def use_dotenv():
     try:
         from dotenv import load_dotenv
 
@@ -19,9 +20,14 @@ def create_app():
     except Exception as e:
         print(e)
 
+
+def create_app():
+
+    use_dotenv()
+
     app = Flask(__name__)
 
-    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+    app.config['SECRET_KEY'] = os.getenv("SECRET_KEY") or str(uuid.uuid4())
     app.config['DATABASE_URL'] = os.getenv("DATABASE_URL")
 
     return app
@@ -37,7 +43,7 @@ def index():
 
 @app.route("/urls", methods=["GET"])
 def urls_get():
-    all_urls = select_checkinfo() or []
+    all_urls = select_checkinfo()
     return render_template("all_urls_page.html",
                            urls=all_urls)
 
@@ -58,8 +64,8 @@ def urls_post():
     if errors:
         flash("Некорректный URL", "danger")
         return render_template("index.html", data=data, errors=errors), 422
-    new_url = url_normalize(data["url"])
 
+    new_url = url_normalize(data["url"])
     old_data = find_url_by_name(new_url)
     if old_data:
         flash("Страница уже существует", "info")
@@ -79,17 +85,17 @@ def urls_check(id_):
         req = requests.get(url_data.name)
         status_code = req.status_code
         req.raise_for_status()
-    except Exception as e:
-        print(f"Error! {e}")
-        flash("Произошла ошибка при проверке", "danger")
-    else:
+
         parsed_data = parse_html(url_data.name)
-        if parsed_data:
-            save_check(id_,
-                       status_code=status_code,
-                       title=parsed_data["title"],
-                       h1=parsed_data["h1"])
-            flash("Страница успешно проверена", "success")
-        else:
-            flash("Произошла ошибка при проверке", "danger")
+
+        if not parsed_data:
+            raise Exception("Ошибка при проверке!")
+        save_check(id_,
+                   status_code=status_code,
+                   title=parsed_data["title"],
+                   h1=parsed_data["h1"])
+        flash("Страница успешно проверена", "success")
+    except Exception as e:
+        flash("Произошла ошибка при проверке", "danger")
+        print(e)
     return redirect(url_for("urls_show", id_=id_))

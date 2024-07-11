@@ -1,7 +1,7 @@
 from page_analyzer.app import app as app_
 
-import os
 import pytest
+import uuid
 
 
 @pytest.fixture
@@ -9,7 +9,7 @@ def app():
     new_app = app_
     new_app.config.update({
         "TESTING": True,
-        "SECRET_KEY": os.getenv("TEST_SECRET_KEY"),
+        "SECRET_KEY": str(uuid.uuid4()),
     })
     return new_app
 
