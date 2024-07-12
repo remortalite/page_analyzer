@@ -114,7 +114,7 @@ def find_url_by_name(name):
             return URLtuple._make(curs.fetchone())
     except Exception as e:
         print(e)
-    return False
+    return URLtuple()
 
 
 def save_check(id_, *, status_code=None,
