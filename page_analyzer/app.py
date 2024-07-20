@@ -32,6 +32,8 @@ def create_app():
     DEBUG = os.getenv("FLASK_DEBUG")
 
     logging.basicConfig(level=(logging.INFO if not DEBUG else logging.DEBUG))
+    if DEBUG:
+        logger.info("FLASK_DEBUG is on!")
 
     app = Flask(__name__)
 
