@@ -24,3 +24,6 @@ make install start
 
 ## Примеры работы
 
+![Screenshot 1](https://github.com/remortalite/python-project-83/blob/main/.github/assets/2024-07-20_21-26.png)
+
+![Screenshot 2](https://github.com/remortalite/python-project-83/blob/main/.github/assets/2024-07-20_21-33.png)
