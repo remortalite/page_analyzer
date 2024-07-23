@@ -3,3 +3,6 @@ __pycache__/
 
 *.sw[poa]
 .env
+.coverage
+coverage.xml
+*.log
