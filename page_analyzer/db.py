@@ -4,15 +4,13 @@ import os
 import logging
 
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-
 logger = logging.getLogger(__name__)
 
 
 def create_connection():
+    db_url = os.getenv("DATABASE_URL")
     try:
-        conn = psycopg2.connect(DATABASE_URL,
+        conn = psycopg2.connect(db_url,
                                 cursor_factory=RealDictCursor)
         return conn
     except psycopg2.Error as e:
@@ -55,7 +53,7 @@ def get_lastcheck_by_url_id(id_):
         return curs.fetchone()
 
 
-def get_lastcheck_info():
+def get_lastchecks_info():
     urls = get_urls()
     checks = []
     try:
@@ -66,6 +64,17 @@ def get_lastcheck_info():
     except Exception as e:
         logger.error(f"Connection error! {e}")
     return checks
+
+
+def get_url_ids():
+    sql = """SELECT DISTINCT id FROM urls"""
+    try:
+        with create_connection() as conn, conn.cursor() as curs:
+            curs.execute(sql)
+            return curs.fetchall()
+    except psycopg2.Error as e:
+        logger.error(e)
+    return []
 
 
 def get_checks_by_url_id(id_):
@@ -83,25 +92,19 @@ def get_checks_by_url_id(id_):
 
 
 def find_url_by_id(id_):
-    try:
-        with create_connection() as conn, conn.cursor() as curs:
-            curs.execute("""SELECT id, name, created_at
-                            FROM urls
-                            WHERE id = %s""", [str(id_)])
-            return curs.fetchone()
-    except psycopg2.Error as e:
-        logger.error(f"Connection error! {e}")
+    with create_connection() as conn, conn.cursor() as curs:
+        curs.execute("""SELECT id, name, created_at
+                        FROM urls
+                        WHERE id = %s""", [str(id_)])
+        return curs.fetchone()
 
 
 def find_url_by_name(name):
-    try:
-        with create_connection() as conn, conn.cursor() as curs:
-            curs.execute("""SELECT id, name, created_at
-                            FROM urls
-                            WHERE name = %s""", [name])
-            return curs.fetchone()
-    except psycopg2.Error as e:
-        logger.error(f"Connection error! {e}")
+    with create_connection() as conn, conn.cursor() as curs:
+        curs.execute("""SELECT id, name, created_at
+                        FROM urls
+                        WHERE name = %s""", [name])
+        return curs.fetchone()
 
 
 def save_check(id_, *, status_code=None,
