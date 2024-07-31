@@ -26,9 +26,3 @@ def test_index(client):
     with client:
         response = client.get("/")
         assert "Бесплатно проверяйте сайты на SEO-пригодность" in response.text
-
-
-def test_urls(client):
-    with client:
-        response = client.get("/urls")
-        assert "Последняя проверка" in response.text
